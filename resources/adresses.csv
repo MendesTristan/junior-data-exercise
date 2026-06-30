@@ -1,0 +1,19 @@
+ipp,ligne_adresse,code_postal,ville,pays,type_adresse,date_debut,date_fin
+800000123,12 rue de la Paix,75002,Paris,France,actuelle,2018-06-01,
+700000045,3 allée des Tilleuls,69003,Lyon,France,ancienne,2010-01-01,2018-05-31
+800000124,45 avenue Victor Hugo,33000,Bordeaux,FRANCE,actuelle,2019-02-01,
+800000126,7 Boulevard Haussmann,75009,paris,France,domicile,2017-04-01,
+700000051,7 bd haussmann,75009,Paris,,ancienne,2012-01-01,2017-03-31
+800000127,2 rue du Port,29200,Brest,France,actuelle,2016-12-01,
+800000127,2 Rue du Port,29200,BREST,France,actuelle,2020-01-01,
+800000128,18 rue des Lilas,59000,Lille,France,actuelle,2021-03-01,
+800000128,90 rue Nationale,59000,Lille,France,ancienne,2015-01-01,2021-02-28
+800000129,5 impasse des Roses,,Marseille,France,actuelle,2022-07-01,
+800000130,22 quai de Seine,75019,Paris,France,actuelle,2023-05-01,
+800000131,14 rue Gambetta,44000,Nantes,France,actuelle,2015-09-01,
+700000062,14 r. gambetta,44000,Nantes,France,ancienne,2008-01-01,2015-08-31
+800000132,16 rue de la République,69002,Lyon,France,,2019-12-12,
+800000133,8 cours Mirabeau,13100,Aix-en-Provence,France,actuelle,2020-08-01,
+800000134,3 place Bellecour,6900,Lyon,France,actuelle,2014-02-01,
+800000135,11 rue Pasteur,67000,Strasbourg,France,actuelle,2024-04-01,
+800000136,221B Baker Street,NW1 6XE,Londres,Royaume-Uni,actuelle,2013-06-01,
