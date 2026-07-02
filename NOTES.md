@@ -79,5 +79,5 @@ Deux précisions importantes sur ce choix :
   chercherait le patient par son ancien identifiant le retrouverait.
 
 Si les données évoluaient (fiches dépréciées portant des informations
-uniques), je passerais à la fusion champ par champ — je le note comme
+uniques), je passerais à la fusion champ par champ,je le note comme
 limite en fin de document.
