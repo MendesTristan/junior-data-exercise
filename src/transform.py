@@ -66,7 +66,7 @@ def clean_nom(col: Column) -> Column:
 def clean_prenoms(col: Column) -> Column:
     """Parse la liste JSON de prenoms et nettoie chaque element.
 
-    Exemple : '["Marie ","Claire"]' -> ["Marie", "Claire"]
+    
     """
     parsed = F.from_json(col, "array<string>")
     return F.transform(parsed, lambda x: F.initcap(F.trim(x)))
