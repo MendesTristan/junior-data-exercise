@@ -45,7 +45,6 @@ et pointe vers le bon via la colonne ipp_principal. Les autres fichiers
 parfois à un IPP déprécié. Tout l'exercice consiste donc à résoudre
 les identités avant de joindre quoi que ce soit.
 
-La liste détaillée des anomalies repérées est plus bas dans ce document.
 
 ## Arbitrage : que faire des fiches en double ?
 
