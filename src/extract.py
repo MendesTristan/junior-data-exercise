@@ -10,8 +10,7 @@ RESOURCES_DIR = "resources"
 def _read_csv(spark: SparkSession, name: str) -> DataFrame:
     """Lit un CSV avec les options adaptees aux sources.
 
-    quote/escape : les prenoms contiennent des listes JSON avec des
-    virgules et des guillemets doubles ("[""Marie"",""Claire""]").
+ 
     """
     return (
         spark.read
@@ -46,6 +45,7 @@ def read_opposition(spark: SparkSession) -> DataFrame:
     return _read_csv(spark, "opposition_recherche")
 
 
+
 def extract(spark: SparkSession) -> dict[str, DataFrame]:
     """Point d'entree : lit les 4 sources et les retourne dans un dict."""
     return {
@@ -53,4 +53,4 @@ def extract(spark: SparkSession) -> dict[str, DataFrame]:
         "identifiants": read_identifiants(spark),
         "adresses": read_adresses(spark),
         "opposition": read_opposition(spark),
-    }
+    } 
