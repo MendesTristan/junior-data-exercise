@@ -74,3 +74,34 @@ nous nous intéressons surtout à **votre raisonnement et à vos arbitrages**.
   documentez ce que vous auriez fait.
 
 Bon courage 🙂
+
+
+
+
+# Section Indication du devoir
+
+
+## Implémentation
+
+Pipeline PySpark structuré en ETL : `src/extract.py` (lecture),
+`src/transform.py` (nettoyage et consolidation), `src/load.py`
+(mapping FHIR R4 et écriture), `src/main.py` (orchestration).
+
+### Lancer le pipeline
+
+Dans un GitHub Codespace (l'environnement s'installe seul via le
+devcontainer) ou tout environnement avec Python 3.11+ et Java 17 :
+
+    pip install -r requirements.txt
+    python src/main.py
+
+
+
+### Sorties (dossier output/)
+
+- `patients_fhir_ndjson/` : une ressource Patient FHIR R4 par ligne
+- `patients_fhir.parquet/` : la même table en format requêtable
+- `rejects/` : enregistrements écartés, avec motif
+
+Les hypothèses, anomalies repérées et arbitrages sont détaillés
+dans [NOTES.md](NOTES.md).
