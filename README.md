@@ -78,7 +78,7 @@ Bon courage 🙂
 
 
 
-# Section Indication du devoir
+# Section Indication de lancement de la pipeline
 
 
 ## Implémentation
@@ -95,7 +95,9 @@ devcontainer) ou tout environnement avec Python 3.11+ et Java 17 :
     pip install -r requirements.txt
     python src/main.py
 
+### Lancer les tests
 
+    pytest test_pipeline.py -v
 
 ### Sorties (dossier output/)
 
