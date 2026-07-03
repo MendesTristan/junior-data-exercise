@@ -18,8 +18,8 @@ les deux langages.
 Ensuite, avant d'écrire la moindre transformation, j'ai lu les quatre fichiers
 ligne par ligne. C'est ce qui m'a permis de comprendre le modèle :
 `identifiants_ipp.csv` est le référentiel des identités. Un patient peut
-exister sous deux IPP — une fiche dépréciée qui pointe vers la fiche active
-via `ipp_principal` — et les adresses comme les oppositions sont parfois
+exister sous deux IPP une fiche dépréciée qui pointe vers la fiche active
+via `ipp_principal` et les adresses comme les oppositions sont parfois
 rattachées à l'ancien IPP. Tout l'exercice tient dans une phrase : résoudre
 les identités avant de joindre quoi que ce soit.
 
@@ -53,7 +53,7 @@ pytest test_pipeline.py -v  # les tests
 ```
 
 
-## Ce que j'ai trouvé dans les données, et ce que j'en ai fait
+## Anomalies et traitement
 
 **Les valeurs sales.** Quatre formats de dates, que je convertis en essayant
 chaque format connu (`try_to_date` renvoie null si le format ne colle pas,
@@ -65,40 +65,54 @@ espaces parasites et casse aléatoire, parsés puis nettoyés élément par
 toute comparaison.
 
 **Les doublons.** Trois patients existent en double, sous un IPP actif et un
-IPP déprécié. J'ai comparé les paires : les fiches dépréciées ne contiennent
-aucune information absente des fiches actives les mêmes données, en moins
-propre. J'ai donc écarté la fusion champ par champ (de la complexité sans
-gain, avec le risque de réintroduire des valeurs sales) au profit d'une règle
-simple : la fiche active fait foi. Rien n'est perdu : les adresses et
-l'opposition de l'ancien IPP sont réaffectées au patient, et l'ancien IPP
-reste dans `identifier[]` avec `use: old` on peut toujours retrouver le
-patient par son ancien identifiant. S'y ajoutent un doublon pur (`800000124`,
-deux lignes identiques à un espace près, dédupliquées après nettoyage) et une
-même adresse saisie deux fois avec des casses différentes (`800000127`),
-dédupliquée par une clé insensible à la casse en gardant la saisie la plus
-récente.
+IPP déprécié. S'y ajoutent un doublon pur (`800000124`, deux lignes identiques
+à un espace près, dédupliquées après nettoyage) et une même adresse saisie
+deux fois avec des casses différentes (`800000127`), dédupliquée par une clé
+insensible à la casse en gardant la saisie la plus récente.
 
-**L'opposition à la recherche.** Le point le plus sensible. Neuf façons
-d'écrire oui ou non, une valeur vide, des patients absents du fichier. Ma
-règle : tout ce qui n'est pas clairement lisible reste `null`. Un consentement
-non recueilli n'est pas un consentement, et le confondre avec « non opposé »
-reviendrait à utiliser pour la recherche les données d'un patient dont on
-ignore le choix. Quand un patient fusionné a deux recueils, le plus récent
-fait foi. Faute de champ natif dans `Patient`, l'information est portée par
-une extension FHIR — l'alternative propre serait une ressource `Consent`
-séparée, je la mentionne en perspective.
+**L'opposition à la recherche.** Neuf façons d'écrire oui ou non, une valeur
+vide, des patients absents du fichier.
 
 **Les orphelins.** Un IPP déprécié sans cible (`700000099`) et une opposition
 rattachée à un IPP inconnu (`800000199`). Plutôt que de les écarter en
-silence, je les trace dans `output/rejects/` avec un motif. En contexte
-hospitalier, une donnée ne disparaît pas sans trace, d'autant que l'un des
-deux est une opposition à la recherche, peut-être mal saisie, qui mérite une
-enquête côté source.
+silence, je les trace dans `output/rejects/` avec un motif.
 
-**Ce que je ne corrige pas.** Le code postal invalide (`6900` pour Lyon),
-l'adresse à Londres : conservés tels quels. Je ne corrige pas une donnée que
-je ne peux pas vérifier. Même logique pour les champs manquants (une date de
-naissance absente) : simplement omis de la ressource FHIR, jamais inventés.
+## Hypothèses
+
+**Les fiches dépréciées n'apportent rien de plus.** J'ai comparé les paires :
+les fiches dépréciées ne contiennent aucune information absente des fiches
+actives — les mêmes données, en moins propre. C'est ce constat qui fonde
+l'arbitrage « la fiche active fait foi » ci-dessous.
+
+**Un consentement non recueilli n'est pas un consentement.** Le confondre
+avec « non opposé » reviendrait à utiliser pour la recherche les données d'un
+patient dont on ignore le choix.
+
+**Les valeurs invérifiables restent telles quelles.** Le code postal invalide
+(`6900` pour Lyon), l'adresse à Londres : conservés tels quels. Je ne corrige
+pas une donnée que je ne peux pas vérifier. Même logique pour les champs
+manquants (une date de naissance absente) : simplement omis de la ressource
+FHIR, jamais inventés.
+
+## Arbitrages
+
+**La fiche active fait foi.** J'ai écarté la fusion champ par champ (de la
+complexité sans gain, avec le risque de réintroduire des valeurs sales) au
+profit d'une règle simple : la fiche active fait foi. Rien n'est perdu : les
+adresses et l'opposition de l'ancien IPP sont réaffectées au patient, et
+l'ancien IPP reste dans `identifier[]` avec `use: old`on peut toujours
+retrouver le patient par son ancien identifiant.
+
+**L'opposition illisible reste inconnue.**  tout ce qui n'est pas
+clairement lisible reste `null`. Quand un patient fusionné a deux recueils,
+le plus récent fait foi. Faute de champ natif dans `Patient`, l'information
+est portée par une extension FHIR l'alternative propre serait une ressource
+`Consent` séparée, je la mentionne en perspective.
+
+**Les orphelins sont tracés, jamais supprimés.** En contexte hospitalier, une
+donnée ne disparaît pas sans trace, d'autant que l'un des deux est une
+opposition à la recherche, peut-être mal saisie, qui mérite une enquête côté
+source.
 
 ## Vérification
 
@@ -111,20 +125,6 @@ devient jamais `False`.
 Au final : 18 lignes patients en entrée (dont 3 fiches dépréciées et
 1 doublon), 14 patients uniques en sortie, 2 rejets tracés. L'échantillon
 complet est dans `output/`.
-
-## Et sur de vrais volumes ?
-
-Le pipeline a été pensé pour que le passage à l'échelle soit une affaire de
-configuration, pas de réécriture. L'API DataFrame est distribuée par nature :
-le même code tourne sur 18 lignes en local et sur des millions de patients
-sur un cluster, il suffit de changer le `master` et de retirer les
-`coalesce(1)`, présents uniquement pour rendre l'échantillon lisible sur
-GitHub. L'absence totale d'UDF Python n'est pas un détail : sur de gros
-volumes, ce sont les allers-retours entre la JVM et Python qui coûtent, et
-les fonctions natives laissent Catalyst optimiser tout le plan d'exécution.
-Les opérations les plus lourdes du pipeline (fenêtrages, jointures) sont des
-patterns que Spark sait distribuer et que l'on peut accompagner d'un
-partitionnement de la sortie.
 
 
 
